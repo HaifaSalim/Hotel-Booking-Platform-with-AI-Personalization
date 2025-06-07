@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Check-in Verification</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
+    <style>
+        #qr-reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        #result-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .success-badge {
+            background-color: #28a745;
+        }
+
+        .error-badge {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Hotel Check-in Verification</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="qr-reader"></div>
+                        <div class="text-center mt-3">
+                            <button id="start-button" class="btn btn-primary">Start Scanner</button>
+                        </div>
+
+                        <div id="result-container" class="mt-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Reservation Details</h5>
+                                    <span id="verification-badge" class="badge"></span>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th>Booking Reference</th>
+                                                <td id="booking-reference"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Guest Name</th>
+                                                <td id="guest-name"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Hotel</th>
+                                                <td id="hotel-name"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Check-in Date</th>
+                                                <td id="check-in-date"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Check-out Date</th>
+                                                <td id="check-out-date"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Room Count</th>
+                                                <td id="room-count"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Room Details</th>
+                                                <td id="room-details"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Method</th>
+                                                <td id="payment-method"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total Price</th>
+                                                <td id="total-price"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const html5QrCode = new Html5Qrcode("qr-reader");
+            const startButton = document.getElementById('start-button');
+            let isScanning = false;
+
+            startButton.addEventListener('click', function () {
+                if (isScanning) {
+                    html5QrCode.stop().then(() => {
+                        startButton.textContent = 'Start Scanner';
+                        isScanning = false;
+                    });
+                } else {
+                    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+                    html5QrCode.start(
+                        { facingMode: "environment" },
+                        config,
+                        onScanSuccess,
+                        onScanFailure
+                    ).then(() => {
+                        startButton.textContent = 'Stop Scanner';
+                        isScanning = true;
+                    });
+                }
+            });
+
+            function onScanSuccess(decodedText) {
+                try {
+                    const url = new URL(decodedText);
+                    const token = url.searchParams.get('token');
+
+                    if (token) {
+                        html5QrCode.stop().then(() => {
+                            startButton.textContent = 'Start Scanner';
+                            isScanning = false;
+                            verifyToken(token);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Invalid QR code format:", error);
+                }
+            }
+
+            function onScanFailure(error) {
+                console.warn(`QR code scanning failed: ${error}`);
+            }
+
+            function verifyToken(token) {
+                fetch(`/admin/verify?token=${token}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultContainer = document.getElementById('result-container');
+                        const verificationBadge = document.getElementById('verification-badge');
+                        const errorMessage = document.getElementById('error-message');
+
+                        if (data.verified) {
+                            resultContainer.style.display = 'block';
+                            errorMessage.style.display = 'none';
+
+                            document.getElementById('booking-reference').textContent = data.bookingReference;
+                            document.getElementById('guest-name').textContent = data.guestName;
+                            document.getElementById('hotel-name').textContent = data.hotelName;
+                            document.getElementById('check-in-date').textContent = data.checkInDate;
+                            document.getElementById('check-out-date').textContent = data.checkOutDate;
+                            document.getElementById('room-count').textContent = data.roomCount;
+                            document.getElementById('payment-method').textContent = data.paymentMethod;
+                            document.getElementById('total-price').textContent = `$${data.totalPrice.toFixed(2)}`;
+
+                            let roomDetailsHTML = "";
+                            Object.keys(data.roomTypes).forEach(type => {
+                                roomDetailsHTML += `<strong>${type}</strong>: ${data.roomTypes[type]}<br>`;
+                            });
+                            document.getElementById('room-details').innerHTML = roomDetailsHTML;
+
+                            verificationBadge.textContent = 'Verified';
+                            verificationBadge.className = 'badge success-badge';
+                        } else {
+                            resultContainer.style.display = 'none';
+                            errorMessage.textContent = data.message;
+                            errorMessage.style.display = 'block';
+
+                            verificationBadge.textContent = 'Invalid';
+                            verificationBadge.className = 'badge error-badge';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error verifying token:', error);
+                    });
+            }
+
+        });
+    </script>
+</body>
+
+</html>

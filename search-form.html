@@ -1,0 +1,167 @@
+<div class="container">
+    <div class="row check-availabilty">
+        <div class="block-32" data-aos="fade-up" data-aos-offset="-200">
+            <form id="searchForm" action="hotels.html" method="get">
+                <div class="row align-items-end">
+
+                    <div class="col-md-6 col-lg-2">
+                        <label for="checkin_date" class="font-weight-bold text-black">Check In</label>
+                        <div class="field-icon-wrap">
+                            <div class="icon"><span class="icon-calendar"></span></div>
+                            <input type="date" id="checkin_date" name="checkin" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-2">
+                        <label for="checkout_date" class="font-weight-bold text-black">Check Out</label>
+                        <div class="field-icon-wrap">
+                            <div class="icon"><span class="icon-calendar"></span></div>
+                            <input type="date" id="checkout_date" name="checkout" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-2">
+                        <label for="location" class="font-weight-bold text-black">Location</label>
+                        <div class="field-icon-wrap">
+                            <div class="icon"><span class="icon-map-marker"></span></div>
+                            <select id="location" name="location" class="form-control">
+                                <option value="">All Emirates</option>
+                                <option value="abu dhabi">Abu Dhabi</option>
+                                <option value="dubai">Dubai</option>
+                                <option value="sharjah">Sharjah</option>
+                                <option value="ajman">Ajman</option>
+                                <option value="fujairah">Fujairah</option>
+                                <option value="ras al khaimah">Ras Al Khaimah</option>
+                                <option value="umm al quwain">Umm Al Quwain</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <label class="font-weight-bold text-black">Guests</label>
+                        <div class="position-relative">
+                            <button
+                                class="btn btn-light border w-100 text-left d-flex align-items-center justify-content-between"
+                                type="button" onclick="toggleGuestDropdown()">
+                                <span id="guestSummary">1 adult · 0 children · 1 room</span>
+                                <span>▼</span>
+                            </button>
+                            <div id="guestDropdown" class="guest-dropdown bg-white shadow-sm p-3 "
+                                style="display: none; position: absolute; width: 100%; z-index: 10;">
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Adults</span>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="decrementCounter('adults', 1)">-</button>
+                                        <input type="text" id="adults" name="adults"
+                                            class="form-control text-center mx-2" value="1" readonly
+                                            style="width: 40px;">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="incrementCounter('adults', 10)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Children</span>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="decrementCounter('children', 0)">-</button>
+                                        <input type="text" id="children" name="children"
+                                            class="form-control text-center mx-2" value="0" readonly
+                                            style="width: 40px;">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="incrementCounter('children', 6)">+</button>
+                                    </div>
+                                </div>
+
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Rooms</span>
+                                    <div class="d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="decrementCounter('rooms', 1)">-</button>
+                                        <input type="text" id="rooms" name="rooms" class="form-control text-center mx-2"
+                                            value="1" readonly style="width: 40px;">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="incrementCounter('rooms', 5)">+</button>
+                                    </div>
+                                </div>
+
+
+                                <button type="button" class="btn btn-primary btn-sm w-100 mt-2"
+                                    onclick="updateGuestSummary(); toggleGuestDropdown();">Done</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+                        <button type="submit" class="btn btn-primary btn-block text-white">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkinInput = document.getElementById("checkin_date");
+        const checkoutInput = document.getElementById("checkout_date");
+        const locationSelect = document.getElementById("location");
+
+        y
+        const today = new Date().toISOString().split("T")[0];
+        checkinInput.min = today;
+
+
+        checkinInput.addEventListener("change", function () {
+            checkoutInput.min = this.value;
+            if (checkoutInput.value && checkoutInput.value <= this.value) {
+                checkoutInput.value = "";
+            }
+        });
+
+        checkoutInput.addEventListener("change", function () {
+            if (this.value <= checkinInput.value) {
+                alert("Checkout date must be after check-in date.");
+                this.value = "";
+            }
+        });
+
+        if (sessionStorage.getItem("location")) {
+            locationSelect.value = sessionStorage.getItem("location");
+        }
+
+        if (document.getElementById("searchForm")) {
+            document.getElementById("searchForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const checkin = document.getElementById("checkin_date").value;
+                const checkout = document.getElementById("checkout_date").value;
+                const location = document.getElementById("location").value;
+                const adults = document.getElementById("adults").value;
+                const children = document.getElementById("children").value;
+                const rooms = document.getElementById("rooms").value;
+
+                if (!checkin || !checkout) {
+                    alert("Please select both check-in and check-out dates.");
+                    return;
+                }
+                if (checkin >= checkout) {
+                    alert("Check-in date must be before check-out date.");
+                    return;
+                }
+
+                sessionStorage.setItem("checkin", checkin);
+                sessionStorage.setItem("checkout", checkout);
+                sessionStorage.setItem("location", location);
+                sessionStorage.setItem("adults", adults);
+                sessionStorage.setItem("children", children);
+                sessionStorage.setItem("rooms", rooms);
+
+                const queryString = `?checkin=${checkin}&checkout=${checkout}&location=${encodeURIComponent(location)}&adults=${adults}&children=${children}&rooms=${rooms}`;
+                window.location.href = "hotels.html" + queryString;
+            });
+        }
+    });
+</script>

@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="" />
+  <link rel="stylesheet" type="text/css"
+    href="//fonts.googleapis.com/css?family=|Roboto+Sans:400,700|Playfair+Display:400,700">
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/aos.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+  <link rel="stylesheet" href="css/fancybox.min.css">
+
+  <link rel="stylesheet" href="fonts/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/navigation.css">
+
+
+  <link rel="stylesheet" href="css/style.css">
+  <title>Booking Confirmation | InnovateStay</title>
+</head>
+
+
+
+<body>
+  <header class="site-header js-site-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-6 col-lg-4 site-logo" data-aos="fade"><a href="index.html">InnovateStay</a></div>
+        <div class="col-6 col-lg-8">
+         
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <section class="site-hero inner-page overlay" style="background-image: url(images/hero_4.jpg)"
+    data-stellar-background-ratio="0.5">
+    <div class="container">
+      <div class="row site-hero-inner justify-content-center align-items-center">
+        <div class="col-md-10 text-center" data-aos="fade">
+          <h1 class="heading mb-3">Booking Confirmation</h1>
+          <ul class="custom-breadcrumbs mb-4">
+            <li><a href="index.html">Home</a></li>
+            <li>&bullet;</li>
+            <li>Confirmation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <a class="mouse smoothscroll" href="#next">
+      <div class="mouse-icon">
+        <span class="mouse-wheel"></span>
+      </div>
+    </a>
+  </section>
+  
+
+  <section class="section contact-section" id="next">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10 mx-auto" data-aos="fade-up" data-aos-delay="100">
+          <div class="bg-white p-4 border text-center mb-5">
+            <h2 class="text-black font-weight-bold mb-4">Thank You for Your Reservation!</h2>
+            <div class="confirmation-icon mb-4">
+              <i class="fa fa-check-circle text-success" style="font-size: 5rem;"></i>
+            </div>
+            <p class="lead">Your booking has been successfully confirmed. A confirmation email has been sent to <span
+                id="guest_email">your email address</span>.</p>
+            <h4 class="text-black font-weight-bold mt-4">Reservation #<span id="reservation_id">12345</span></h4>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6" data-aos="fade-up">
+              <div class="bg-light p-4 border mb-4">
+                <h3 class="text-black font-weight-bold">Reservation Details</h3>
+                <p><strong>Guest Name:</strong> <span id="guest_name"></span></p>
+                <p><strong>Hotel:</strong> <span id="hotel_name"></span></p>
+                <p><strong>Check-in Date:</strong> <span id="checkin_date"></span></p>
+                <p><strong>Check-out Date:</strong> <span id="checkout_date"></span></p>
+                <p><strong>Guests:</strong> <span id="adult_count"></span> Adults, <span id="children_count"></span>
+                  Children</p>
+                <p><strong>Payment Method:</strong> <span id="payment_method"></span></p>
+              </div>
+            </div>
+
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+              <div class="bg-light p-4 border mb-4">
+                <h3 class="text-black font-weight-bold">Your Booking</h3>
+                <div id="rooms_booked"></div>
+                <div class="border-top mt-3 pt-3">
+                  <p><strong>Total Price (VAT included):</strong> <span class="text-success font-weight-bold">AED<span
+                        id="total_price">0.00</span></span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-light p-4 border mb-4" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="text-black font-weight-bold">Important Information</h3>
+            <ul class="pl-3">
+              <li>Please present a valid government-issued ID and the credit card used for booking upon arrival.</li>
+              <li>For any special requests or assistance, please contact the hotel directly.</li>
+              <li>If you need to cancel your reservation, please visit your account page or contact us at
+                least 48 hours before check-in.</li>
+            </ul>
+          </div>
+
+          <div class="text-center mb-5" data-aos="fade-up" data-aos-delay="300">
+            <a href="index.html" class="btn btn-primary text-white py-3 px-5 font-weight-bold">Return to Home</a>
+            <button id="print_button" class="btn btn-outline-primary py-3 px-5 font-weight-bold ml-2">Print
+              Confirmation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const bookingReference = sessionStorage.getItem("bookingReference");
+
+      if (!bookingReference) {
+        alert("No booking reference found. Please check your reservation.");
+        return;
+      }
+
+     
+      const reservation = await fetchReservationDetails(bookingReference);
+      if (reservation) {
+        displayReservationDetails(reservation);
+      } else {
+        alert("Reservation not found.");
+      }
+    });
+
+    
+    async function fetchReservationDetails(bookingReference) {
+      try {
+        const response = await fetch(`https://localhost:8443/api/reservations/details/${bookingReference}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch reservation details.");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Error fetching reservation:", error);
+        return null;
+      }
+    }
+
+
+    function displayReservationDetails(reservation) {
+  document.getElementById('reservation_id').textContent = reservation.bookingReference;
+  document.getElementById('guest_name').textContent = `${reservation.firstName} ${reservation.lastName}`;
+  document.getElementById('guest_email').textContent = reservation.email;
+  document.getElementById('hotel_name').textContent = reservation.hotel.name;
+  document.getElementById('checkin_date').textContent = new Date(reservation.checkInDate).toLocaleDateString();
+  document.getElementById('checkout_date').textContent = new Date(reservation.checkOutDate).toLocaleDateString();
+  document.getElementById('adult_count').textContent = reservation.adults || '1';
+  document.getElementById('children_count').textContent = reservation.children || '0';
+  document.getElementById('payment_method').textContent = reservation.paymentMethod || 'Credit Card';
+  document.getElementById('total_price').textContent = reservation.payment.totalPrice.toFixed(2);
+  const roomsContainer = document.getElementById('rooms_booked');
+  roomsContainer.innerHTML = '<h4 class="mb-3">Rooms:</h4>';
+
+  const roomsList = document.createElement('ul');
+  roomsList.className = 'list-unstyled';
+
+  const roomTypeCounts = reservation.roomTypeCounts || {};
+  const nights = calculateNights(reservation.checkInDate, reservation.checkOutDate);
+
+  
+  Object.entries(roomTypeCounts).forEach(([roomType, quantity]) => {
+  
+    const roomWithType = reservation.rooms.find(r => r.roomType === roomType);
+    const roomPrice = roomWithType ? roomWithType.price : 0;
+    
+    const roomItem = document.createElement('li');
+    roomItem.className = 'mb-2';
+    const totalRoomPrice = roomPrice * nights * quantity;
+
+    roomItem.innerHTML = `
+      <div class="d-flex justify-content-between">
+        <span>${quantity}x ${roomType}</span>
+        <span>AED ${totalRoomPrice.toFixed(2)}</span>
+      </div>
+      <small class="text-muted"> AED ${roomPrice} per night × ${nights} nights × ${quantity} rooms</small>
+    `;
+    roomsList.appendChild(roomItem);
+  });
+
+  roomsContainer.appendChild(roomsList);
+}
+
+function calculateNights(checkIn, checkOut) {
+  const start = new Date(checkIn);
+  const end = new Date(checkOut);
+  const timeDiff = Math.abs(end - start);
+  return Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) || 1;
+}
+
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      const bookingReference = getQueryParam('bookingReference');
+      if (bookingReference) {
+        const reservation = await fetchReservationDetails(bookingReference);
+        if (reservation) {
+          displayReservationDetails(reservation);
+
+        } else {
+          alert('Reservation not found. Please check your booking reference.');
+        }
+      } else {
+        alert('No booking reference provided.');
+      }
+    });
+
+    document.getElementById('print_button').addEventListener('click', () => {
+      setTimeout(() => {
+        window.print();
+      }, 500); 
+    });
+  </script>
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/jquery.fancybox.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/jquery.timepicker.min.js"></script>
+  <script src="js/auth-nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

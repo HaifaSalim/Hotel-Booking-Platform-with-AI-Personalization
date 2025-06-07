@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 mt-5">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h2 id="verificationTitle" class="mb-4">Verifying Your Email...</h2>
+                        <div id="loadingSpinner" class="mb-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <p id="verificationMessage"></p>
+                        <div id="loginLink" style="display: none;">
+                            <a href="login.html" class="btn btn-primary">Go to Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            const title = document.getElementById('verificationTitle');
+            const message = document.getElementById('verificationMessage');
+            const spinner = document.getElementById('loadingSpinner');
+            const loginLink = document.getElementById('loginLink');
+
+            if (!token) {
+                title.textContent = 'Verification Failed';
+                message.textContent = 'Invalid verification link. Please check your email or contact support.';
+                spinner.style.display = 'none';
+                return;
+            }
+
+
+            fetch(`https://localhost:8443/users/verify?token=${encodeURIComponent(token)}`)
+                .then(response => {
+                    spinner.style.display = 'none';
+
+                    if (response.ok) {
+                        title.textContent = 'Email Verified!';
+                        title.className = 'mb-4 text-success';
+                        message.textContent = 'Your email has been successfully verified. You can now log in to your account.';
+                        loginLink.style.display = 'block';
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(text || 'Verification failed. Please try again or contact support.');
+                        });
+                    }
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    title.textContent = 'Verification Failed';
+                    title.className = 'mb-4 text-danger';
+                    message.textContent = error.message;
+                });
+        });
+    </script>
+</body>
+
+</html>

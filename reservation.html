@@ -1,0 +1,621 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="" />
+  <link rel="stylesheet" type="text/css"
+    href="//fonts.googleapis.com/css?family=|Roboto+Sans:400,700|Playfair+Display:400,700">
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/aos.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+  <link rel="stylesheet" href="css/fancybox.min.css">
+
+  <link rel="stylesheet" href="fonts/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <header class="site-header js-site-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-6 col-lg-4 site-logo" data-aos="fade"><a href="index.html">InnnovateStay</a></div>
+        <div class="col-6 col-lg-8">
+
+
+
+
+        </div>
+      </div>
+  </header>
+
+  <section class="site-hero inner-page overlay" style="background-image: url(images/hero_4.jpg)"
+    data-stellar-background-ratio="0.5">
+    <div class="container">
+      <div class="row site-hero-inner justify-content-center align-items-center">
+        <div class="col-md-10 text-center" data-aos="fade">
+          <h1 class="heading mb-3">Reservation Form</h1>
+          <ul class="custom-breadcrumbs mb-4">
+            <li><a href="index.html">Home</a></li>
+            <li>&bullet;</li>
+            <li>Reservation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <a class="mouse smoothscroll" href="#next">
+      <div class="mouse-icon">
+        <span class="mouse-wheel"></span>
+      </div>
+    </a>
+  </section>
+
+  <section class="section contact-section" id="next">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="bg-light p-4 border">
+            <h3 class="text-black font-weight-bold">Your Booking Details</h3>
+            <p><strong>Hotel:</strong> <span id="name"></span></p>
+            <div id="rooms-summary"></div>
+            <p><strong>Check-in Date:</strong> <span id="checkin_display"></span></p>
+            <p><strong>Check-out Date:</strong> <span id="checkout_display"></span></p>
+            <p><strong>Adults:</strong> <span id="adults_display"></span></p>
+            <p><strong>Children:</strong> <span id="children_display"></span></p>
+            <p><strong>Total Price:</strong> AED <span id="total_price_display">0.00</span></p>
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <form action="#" method="post" class="bg-white p-md-4 p-4 mb-4 border">
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label class="text-black font-weight-bold" for="fname">First Name</label>
+                <input type="text" id="fname" class="form-control">
+              </div>
+              <div class="col-md-6 form-group">
+                <label class="text-black font-weight-bold" for="lname">Last Name</label>
+                <input type="text" id="lname" class="form-control">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label class="text-black font-weight-bold" for="email">Email</label>
+                <input type="email" id="email" class="form-control">
+              </div>
+              <div class="col-md-6 form-group">
+                <label class="text-black font-weight-bold" for="phone">Phone</label>
+                <input type="text" id="phone" class="form-control">
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-12 form-group">
+                <label class="text-black font-weight-bold" for="message">Additional Requests</label>
+                <textarea name="message" id="message" class="form-control" cols="30" rows="2"></textarea>
+              </div>
+            </div>
+
+            <h3 class="text-black font-weight-bold">Payment Details</h3>
+            <div class="row">
+              <div class="col-md-12 form-group">
+                <input type="radio" id="pay_card" name="payment_method" value="card" checked>
+                <label for="pay_card" class="text-black font-weight-bold">Pay with Credit Card</label>
+              </div>
+              <div class="col-md-12 form-group">
+                <input type="radio" id="pay_counter" name="payment_method" value="counter">
+                <label for="pay_counter" class="text-black font-weight-bold">Pay at the Counter</label>
+              </div>
+            </div>
+
+            <div id="card-payment">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label class="text-black font-weight-bold" for="cardHolderName">Name on Card</label>
+                  <input type="text" id="cardHolderName" class="form-control">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label class="text-black font-weight-bold" for="ccnum">Credit Card Number</label>
+                  <input type="text" id="ccnum" name="cardnumber" class="form-control"
+                    placeholder="1111-2222-3333-4444">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label class="text-black font-weight-bold" for="expiryMonth">Exp Month</label>
+                  <input type="text" id="expiryMonth" name="expiryMonth" class="form-control" placeholder="September">
+                </div>
+                <div class="col-md-3 form-group">
+                  <label class="text-black font-weight-bold" for="expiryYear">Exp Year</label>
+                  <input type="text" id="expiryYear" name="expyear" class="form-control" placeholder="2025">
+                </div>
+                <div class="col-md-3 form-group">
+                  <label class="text-black font-weight-bold" for="cvv">CVV</label>
+                  <input type="text" id="cvv" name="cvv" class="form-control" placeholder="352">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <input type="submit" id="reserve-now-button" value="Reserve Now"
+                  class="btn btn-primary text-white py-3 px-5 font-weight-bold">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param) || "Not specified";
+    }
+
+    let selectedRooms = [];
+    let totalPrice = 0;
+    let nightsStay = 0;
+
+    async function fetchBookingDetails() {
+      const hotelId = localStorage.getItem("selectedHotelId");
+
+      const roomsData = localStorage.getItem("selectedRooms");
+      if (roomsData) {
+        selectedRooms = JSON.parse(roomsData);
+      }
+
+      if (!hotelId || !selectedRooms || selectedRooms.length === 0) {
+        document.getElementById("rooms-summary").innerHTML = "<p>No rooms selected. Please return to the hotel page.</p>";
+        return;
+      }
+
+      try {
+        const hotelResponse = await fetch(`https://localhost:8443/api/hotels/${hotelId}`);
+        const hotel = await hotelResponse.json();
+        document.getElementById("name").textContent = hotel.name;
+
+        const checkin = new Date(getQueryParam("checkin"));
+        const checkout = new Date(getQueryParam("checkout"));
+        if (checkin && checkout) {
+          nightsStay = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+        } else {
+          nightsStay = 1;
+        }
+
+        const roomsSummary = document.getElementById("rooms-summary");
+        roomsSummary.innerHTML = "<p><strong>Selected Rooms:</strong></p>";
+
+        let subtotal = 0;
+
+        const roomsList = document.createElement("ul");
+        roomsList.style.paddingLeft = "20px";
+
+        for (const room of selectedRooms) {
+
+          const roomPrice = room.price * room.quantity;
+          subtotal += roomPrice;
+
+          const roomItem = document.createElement("li");
+          roomItem.innerHTML = `${room.quantity} x ${room.roomType} - AED ${roomPrice.toFixed(2)}`;
+          roomsList.appendChild(roomItem);
+        }
+
+        roomsSummary.appendChild(roomsList);
+
+        const vatRate = 0.05;
+        const vatAmount = subtotal * vatRate;
+        totalPrice = subtotal + vatAmount;
+
+        const summaryDiv = document.createElement("div");
+        summaryDiv.className = "price-summary mt-3";
+        summaryDiv.innerHTML = `
+          <div class="d-flex justify-content-between">
+              <span>Subtotal:</span>
+              <span>AED ${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+              <span>VAT (5%):</span>
+              <span>AED ${vatAmount.toFixed(2)}</span>
+          </div>
+          <div class="d-flex justify-content-between fw-bold mt-2">
+              <span>Total:</span>
+              <span>AED ${totalPrice.toFixed(2)}</span>
+          </div>
+      `;
+
+        roomsSummary.appendChild(summaryDiv);
+        document.getElementById("total_price_display").textContent = totalPrice.toFixed(2);
+
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+        document.getElementById("name").textContent = "Not available";
+        document.getElementById("rooms-summary").innerHTML = "<p>Room information not available</p>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("checkin_display").textContent = getQueryParam("checkin");
+      document.getElementById("checkout_display").textContent = getQueryParam("checkout");
+      document.getElementById("adults_display").textContent = getQueryParam("adults") || "1";
+      document.getElementById("children_display").textContent = getQueryParam("children") || "0";
+      fetchBookingDetails();
+    });
+
+    function parseDate(dateString) {
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        return dateString;
+      }
+
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+
+      return dateString;
+    }
+    async function getUserId() {
+      try {
+        const response = await fetch("/users/profile", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          throw new Error("User not logged in");
+        }
+
+        const user = await response.json();
+        return user.id;
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        return null;
+      }
+    }
+    async function getFormData() {
+      const hotelId = localStorage.getItem("selectedHotelId");
+      const selectedRoomsData = localStorage.getItem("selectedRooms");
+
+      if (!hotelId || !selectedRoomsData) {
+        throw new Error('Missing hotel or room information. Please start your booking from the hotel page.');
+      }
+
+      const selectedRooms = JSON.parse(selectedRoomsData);
+      if (selectedRooms.length === 0) {
+        throw new Error('No rooms selected. Please select rooms before booking.');
+      }
+
+
+      const roomQuantities = {};
+      for (const room of selectedRooms) {
+        roomQuantities[room.roomId] = room.quantity;
+      }
+
+      const checkInDate = parseDate(document.getElementById("checkin_display").textContent);
+      const checkOutDate = parseDate(document.getElementById("checkout_display").textContent);
+
+      const userId = await getUserId();
+
+      const formData = {
+        firstName: document.getElementById("fname").value,
+        lastName: document.getElementById("lname").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        additionalRequests: document.getElementById("message").value,
+        paymentMethod: document.querySelector('input[name="payment_method"]:checked').value,
+        cardHolderName: document.getElementById("cardHolderName").value,
+        cardNumber: document.getElementById("ccnum").value,
+        expiryMonth: document.getElementById("expiryMonth").value,
+        expiryYear: document.getElementById("expiryYear").value,
+        cvv: document.getElementById("cvv").value,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+        adults: document.getElementById("adults_display").textContent,
+        children: document.getElementById("children_display").textContent,
+        hotelId: Number(hotelId),
+        roomIds: selectedRooms.map(room => Number(room.roomId)),
+        roomQuantities: roomQuantities,
+        totalPrice: totalPrice,
+        userId: userId
+      };
+
+      const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'checkInDate', 'checkOutDate'];
+      for (const field of requiredFields) {
+        if (!formData[field]) {
+          throw new Error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        }
+      }
+
+      if (formData.paymentMethod === 'card') {
+        const cardFields = ['cardHolderName', 'cardNumber', 'expiryMonth', 'expiryYear', 'cvv'];
+        for (const field of cardFields) {
+          if (!formData[field]) {
+            throw new Error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+          }
+        }
+      }
+
+      return formData;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      window.validators = {
+        fname: value => /^[A-Za-z\s'-]{2,50}$/.test(value) || 'Letters, spaces, hyphens only',
+        lname: value => /^[A-Za-z\s'-]{2,50}$/.test(value) || 'Letters, spaces, hyphens only',
+
+        email: value => {
+          const formatValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+          if (!formatValid) return 'Valid email required';
+
+          const domain = value.split('@')[1].toLowerCase();
+          const username = value.split('@')[0];
+
+          const commonDomains = [
+            { correct: 'gmail.com', pattern: /g[a-z]?mail\.co[a-z]?/ },
+            { correct: 'yahoo.com', pattern: /ya[a-z]?hoo?\.co[a-z]?/ },
+            { correct: 'hotmail.com', pattern: /hot[a-z]?mail\.co[a-z]?/ },
+            { correct: 'outlook.com', pattern: /out[a-z]?look\.co[a-z]?/ }
+          ];
+
+          for (const item of commonDomains) {
+            if (domain !== item.correct && item.pattern.test(domain)) {
+              return `Did you mean ${username}@${item.correct}?`;
+            }
+          }
+
+          return true;
+        },
+        phone: value => /^(\+\d{1,3}\s?)?(\(\d{1,4}\)\s?)?[\d\s-]{7,15}$/.test(value) || 'Valid phone number required',
+        cardHolderName: value => /^[A-Za-z\s'-]{2,50}$/.test(value) || 'Name as it appears on card',
+        ccnum: value => {
+          const clean = value.replace(/\D/g, '');
+          if (!/^\d{13,19}$/.test(clean)) return 'Card number must be 13-19 digits';
+
+          let sum = 0;
+          for (let i = 0; i < clean.length; i++) {
+            let digit = parseInt(clean.charAt(clean.length - 1 - i));
+            if (i % 2 === 1) {
+              digit *= 2;
+              if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+          }
+          return sum % 10 === 0 || 'Invalid card number';
+        },
+        expiryMonth: value => {
+          const months = ['january', 'february', 'march', 'april', 'may', 'june',
+            'july', 'august', 'september', 'october', 'november', 'december'];
+          const num = parseInt(value);
+          return (!isNaN(num) && num >= 1 && num <= 12) ||
+            months.includes(value.toLowerCase()) ||
+            'Enter valid month (name or 1-12)';
+        },
+        expiryYear: value => {
+          const year = parseInt(value);
+          const currentYear = new Date().getFullYear();
+          return !isNaN(year) && value.length === 4 &&
+            year >= currentYear && year <= currentYear + 20 ||
+            `Year between ${currentYear}-${currentYear + 20}`;
+        },
+        cvv: value => /^\d{3,4}$/.test(value) || 'CVV must be 3-4 digits'
+      };
+
+      Object.keys(window.validators).forEach(field => {
+        const element = document.getElementById(field);
+        if (!element) return;
+
+        element.addEventListener('input', () => validateField(element, window.validators[field]));
+        element.addEventListener('blur', () => validateField(element, window.validators[field]));
+      });
+
+      const ccInput = document.getElementById('ccnum');
+      if (ccInput) {
+        ccInput.addEventListener('input', () => {
+          ccInput.value = ccInput.value.replace(/\D/g, '')
+            .match(/.{1,4}/g)?.join(' ') || '';
+        });
+      }
+
+      const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+      paymentRadios.forEach(radio => {
+        radio.addEventListener('change', updatePaymentSectionTitle);
+      });
+
+      updatePaymentSectionTitle();
+
+      const reserveBtn = document.getElementById('reserve-now-button');
+      if (reserveBtn) {
+        reserveBtn.outerHTML = reserveBtn.outerHTML;
+
+        document.getElementById('reserve-now-button').addEventListener('click', validateBeforeSubmit);
+      }
+      addCardExplanation();
+    });
+
+    function addCardExplanation() {
+      const counterRadio = document.getElementById('pay_counter');
+      if (!counterRadio) return;
+
+      const paymentDiv = counterRadio.parentElement;
+      if (!paymentDiv) return;
+
+      if (document.getElementById('counter-payment-explanation')) return;
+
+      const explanation = document.createElement('div');
+      explanation.id = 'counter-payment-explanation';
+      explanation.className = 'small text-muted ml-4 mt-1';
+      explanation.innerHTML = '* Credit card details are still required as a guarantee for potential cancellation fees';
+
+      paymentDiv.appendChild(explanation);
+    }
+
+    function updatePaymentSectionTitle() {
+      const cardPaymentSelected = document.getElementById('pay_card').checked;
+      const paymentTitle = document.querySelector('h3.text-black.font-weight-bold');
+    }
+
+    function validateField(field, validator) {
+
+      const feedback = field.parentElement.querySelector('.validation-feedback');
+      if (feedback) feedback.remove();
+
+      field.classList.remove('is-valid', 'is-invalid');
+
+      if (!field.value.trim()) return;
+
+      const result = validator(field.value.trim());
+
+      if (result === true || typeof result === 'boolean') {
+        field.classList.add('is-valid');
+      } else {
+        field.classList.add('is-invalid');
+
+        const feedbackEl = document.createElement('div');
+        feedbackEl.className = 'validation-feedback text-danger small mt-1';
+        feedbackEl.textContent = result;
+        field.parentElement.appendChild(feedbackEl);
+      }
+
+      return result === true;
+    }
+    function validateBeforeSubmit(event) {
+      event.preventDefault();
+      const requiredFields = [
+        'fname', 'lname', 'email', 'phone',
+        'cardHolderName', 'ccnum', 'expiryMonth', 'expiryYear', 'cvv'
+      ];
+
+      let isValid = true;
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        if (!field.value.trim()) {
+          field.classList.add('is-invalid');
+          const feedback = field.parentElement.querySelector('.validation-feedback');
+          if (!feedback) {
+            const feedbackEl = document.createElement('div');
+            feedbackEl.className = 'validation-feedback text-danger small mt-1';
+            feedbackEl.textContent = 'This field is required';
+            field.parentElement.appendChild(feedbackEl);
+          }
+          isValid = false;
+          return;
+        }
+        const validator = window.validators?.[fieldId];
+        if (validator && validateField(field, validator) !== true) {
+          isValid = false;
+        }
+      });
+
+      if (isValid) {
+        createReservation(event);
+      } else {
+        alert('Please correct the highlighted fields before submitting.');
+
+        document.querySelector('.is-invalid')?.focus();
+      }
+    }
+    async function createReservation(event) {
+      event.preventDefault();
+
+      try {
+        const reservationData = await getFormData();
+        const submitButton = document.getElementById('reserve-now-button');
+        if (submitButton.disabled) {
+          console.log('Submission already in progress');
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.value = 'Processing...';
+
+        console.log('Sending reservation data:', reservationData);
+
+
+        fetch("https://localhost:8443/api/reservations/book", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(reservationData)
+        })
+          .then(async response => {
+
+            if (!response.ok) {
+
+              const errorData = await response.json().catch(() => null);
+              throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+
+            if (data.reservationId || data.success || (Array.isArray(data) && data.length > 0)) {
+
+              localStorage.removeItem("selectedHotelId");
+              localStorage.removeItem("selectedRooms");
+              sessionStorage.setItem("bookingReference", data.bookingReference);
+              alert('Reservation successful!');
+              window.location.href = 'confirmation.html';
+            } else {
+              throw new Error('No reservation ID received from server');
+            }
+          })
+          .catch(error => {
+            console.error('Error making reservation:', error);
+            alert(`Reservation failed: ${error.message}`);
+
+            submitButton.disabled = false;
+            submitButton.value = 'Reserve Now';
+          });
+      } catch (error) {
+        alert(error.message);
+
+        const submitButton = document.getElementById('reserve-now-button');
+        submitButton.disabled = false;
+        submitButton.value = 'Reserve Now';
+      }
+    }
+
+  </script>
+
+
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/jquery.fancybox.min.js"></script>
+
+  <script src="js/aos.js"></script>
+
+  <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/jquery.timepicker.min.js"></script>
+
+  <script src="js/auth-nav.js"></script>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+            position: fixed;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-2 sidebar">
+                <h3>Admin Dashboard</h3>
+                <a href="#dashboard" onclick="loadSection('dashboard')">Dashboard</a>
+                <a href="#hotels" onclick="loadSection('hotels')">Manage Hotels</a>
+                <a href="#rooms" onclick="loadSection('rooms')">Manage Rooms</a>
+                <a href="#reservations" onclick="loadSection('reservations')">Manage Reservations</a>
+                <a href="#users" onclick="loadSection('users')">Manage Users</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+
+
+            <div class="col-md-10 content">
+                <h2 id="section-title">Admin Dashboard</h2>
+                <div id="section-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+        async function loadSection(section) {
+            const sectionContent = document.getElementById("section-content");
+            const sectionTitle = document.getElementById("section-title");
+
+
+            sectionTitle.textContent = `Manage ${section.charAt(0).toUpperCase() + section.slice(1)}`;
+
+            try {
+                const response = await fetch(`/admin/${section}`);
+                if (!response.ok) {
+                    throw new Error("Failed to load section");
+                }
+                const data = await response.json();
+                displaySectionContent(section, data);
+            } catch (error) {
+                sectionContent.innerHTML = `<p class="text-danger">Error loading ${section}: ${error.message}</p>`;
+            }
+        }
+
+
+        function displaySectionContent(section, data) {
+            const sectionContent = document.getElementById("section-content");
+            if (section === "dashboard") {
+                sectionContent.innerHTML = `
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Bookings</h5>
+                        <h2 class="card-text">${data.totalBookings}</h2>
+                        <p>Last 30 days</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Revenue</h5>
+                        <h2 class="card-text">$${data.revenue.toLocaleString()}</h2>
+                        <p>Last 30 days</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Occupancy Rate</h5>
+                        <h2 class="card-text">${data.occupancyRate}%</h2>
+                        <p>Current</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Check-ins Today</h5>
+                        <h2 class="card-text">${data.checkInsToday}</h2>
+                        <p>${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        Booking Trends
+                    </div>
+                    <div class="card-body">
+                        <canvas id="bookingTrends" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        Room Type Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="roomTypeChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Upcoming Reservations
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Guest</th>
+                                    <th>Check-in</th>
+                                    <th>Nights</th>
+                                    <th>Room Type</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.upcomingReservations.map(res => `
+                                    <tr>
+                                        <td>${res.guestName}</td>
+                                        <td>${res.checkInDate}</td>
+                                        <td>${res.nights}</td>
+                                        <td>${res.roomType}</td>
+                                        <td><span class="badge bg-${res.status === 'Confirmed' ? 'success' : 'warning'}">${res.status}</span></td>
+                                        
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+
+                if (data.bookingTrends && data.roomTypeDistribution) {
+                    loadBookingTrendsChart(data.bookingTrends);
+                    loadRoomTypeChart(data.roomTypeDistribution);
+                }
+            }
+
+            else if (section === "hotels") {
+                sectionContent.innerHTML = `
+                    <h3>Hotels</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(hotel => `
+                                <tr>
+                                    <td>${hotel.id}</td>
+                                    <td>${hotel.name}</td>
+                                    <td>${hotel.location}</td>
+                                    <td>
+                                <button class="btn btn-sm btn-primary" onclick="editItem('hotels', ${hotel.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteItem('hotels', ${hotel.id})">Delete</button>
+                               </td>
+                        </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                `;
+            } else if (section === "rooms") {
+                sectionContent.innerHTML = `
+                    <h3>Rooms</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Occupancy</th>
+                                <th>Rooms available</th>
+                                <th>Amenities</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(room => `
+                                <tr>
+                                    <td>${room.roomId}</td>
+                                    <td>${room.roomType}</td>
+                                    <td>$${room.price}</td>
+                                    <td>${room.occupancy}</td>
+                                    <td>${room.quantity}</td>
+                                    <td>${room.amenities}</td>
+                                     <td>${room.availability}</td>
+                                     <td>
+                                    <button class="btn btn-sm btn-primary" onclick="editItem('rooms', ${room.roomId})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteItem('rooms', ${room.roomId})">Delete</button>
+                        </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                `;
+            } else if (section === "reservations") {
+                sectionContent.innerHTML = `
+                    <h3>Reservations</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Guest First Name</th>
+                                <th>Last Name</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(reservation => `
+                                <tr>
+                                    <td>${reservation.reservationId}</td>
+                                    <td>${reservation.firstName} </td>
+                                    <td>${reservation.lastName}</td>
+                                    <td>${reservation.checkInDate}</td>
+                                    <td>${reservation.checkOutDate}</td>
+                                    <td>${reservation.status}</td>
+                                    <td>
+                                    <button class="btn btn-sm btn-primary" onclick="editItem('reservations', ${reservation.reservationId})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteItem('reservations', ${reservation.reservationId})">Delete</button>
+                                   </td>
+                        </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                `;
+            } else if (section === "users") {
+                sectionContent.innerHTML = `
+                    <h3>Users</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(user => `
+                                <tr>
+                                    <td>${user.id}</td>
+                                     <td>${user.username}</td>
+                                    <td>${user.email}</td>
+                                     <td>
+                                    <button class="btn btn-sm btn-primary" onclick="editItem('users', ${user.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteItem('users', ${user.id})">Delete</button>
+                                   </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+        // Function to handle Edit action
+        async function editItem(section, id) {
+            const item = await fetchItemDetails(section, id);
+            if (item) {
+
+                openEditModal(section, item);
+            } else {
+                alert("Failed to fetch item details.");
+            }
+        }
+
+
+        async function deleteItem(section, id) {
+            if (confirm("Are you sure you want to delete this item?")) {
+                try {
+                    const response = await fetch(`/admin/${section}/${id}`, {
+                        method: "DELETE",
+                    });
+                    if (response.ok) {
+                        alert("Item deleted successfully.");
+                        loadSection(section);
+                    } else {
+                        throw new Error("Failed to delete item.");
+                    }
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+        }
+
+        function loadBookingTrendsChart(data) {
+            const ctx = document.getElementById('bookingTrends').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Bookings',
+                        data: data.bookings,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function loadRoomTypeChart(data) {
+            const ctx = document.getElementById('roomTypeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        async function fetchItemDetails(section, id) {
+            try {
+
+                const url = `/admin/${section}/${id}`;
+                console.log(`Fetching item details from: ${url}`);
+
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch item details. Status: ${response.status}`);
+                }
+
+
+                const data = await response.json();
+                console.log("Fetched item details:", data);
+                return data;
+            } catch (error) {
+                console.error("Error fetching item details:", error);
+                alert(`Error: ${error.message}`);
+                return null;
+            }
+        }
+
+        function openEditModal(section, item) {
+
+            let modal = document.getElementById("editModal");
+
+            if (!modal) {
+
+                const modalContent = `
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Edit ${section.charAt(0).toUpperCase() + section.slice(1)}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="editModalBody">
+                            <form id="editForm">
+                                ${generateEditFormFields(section, item)}
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveChanges('${section}', ${item.id || item.roomId || item.reservationId})">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                document.body.insertAdjacentHTML("beforeend", modalContent);
+
+
+                modal = document.getElementById("editModal");
+
+
+                modal.addEventListener("hidden.bs.modal", function () {
+                    modal.remove();
+                });
+            } else {
+
+                const modalBody = document.getElementById("editModalBody");
+                modalBody.innerHTML = `
+            <form id="editForm">
+                ${generateEditFormFields(section, item)}
+            </form>
+        `;
+
+
+                const modalTitle = document.getElementById("editModalLabel");
+                modalTitle.textContent = `Edit ${section.charAt(0).toUpperCase() + section.slice(1)}`;
+
+
+                const saveButton = document.querySelector("#editModal .modal-footer .btn-primary");
+                saveButton.setAttribute("onclick", `saveChanges('${section}', ${item.id || item.roomId || item.reservationId})`);
+            }
+
+
+            const editModal = new bootstrap.Modal(modal);
+            editModal.show();
+        }
+        function generateEditFormFields(section, item) {
+            switch (section) {
+                case "hotels":
+                    return `
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" value="${item.name}">
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" value="${item.location}">
+                </div>
+            `;
+                case "rooms":
+                    return `
+    <input type="hidden" id="roomId" value="${item.roomId}">
+        <div class="mb-3">
+            <label for="roomType" class="form-label">Room Type</label>
+            <input type="text" class="form-control" id="roomType" value="${item.roomType}">
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" class="form-control" id="price" value="${item.price}">
+        </div>
+        <div class="mb-3">
+            <label for="occupancy" class="form-label">Occupancy</label>
+            <input type="number" class="form-control" id="occupancy" value="${item.occupancy}">
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Room availability</label>
+            <input type="number" class="form-control" id="quantity" value="${item.quantity}">
+        </div>
+        <div class="mb-3">
+            <label for="amenities" class="form-label">Amenities</label>
+            <input type="text" class="form-control" id="amenities" value="${item.amenities}">
+        </div>
+<div class="mb-3">
+            <label for="availability" class="form-label">Availability</label>
+            <select class="form-control" id="availability">
+                <option value="Available" ${item.availability === 'Available' ? 'selected' : ''}>Available</option>
+                <option value="Booked" ${item.availability === 'Booked' ? 'selected' : ''}>Booked</option>
+            </select>
+        </div>
+    `;
+                case "reservations":
+                    return `
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" value="${item.firstName}">
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" value="${item.lastName}">
+                </div>
+                <div class="mb-3">
+            <label for="checkInDate" class="form-label">Check-In Date</label>
+            <input type="date" class="form-control" id="checkInDate" 
+                   value="${item.checkInDate ? formatDateForInput(item.checkInDate) : ''}">
+        </div>
+        <div class="mb-3">
+            <label for="checkOutDate" class="form-label">Check-Out Date</label>
+            <input type="date" class="form-control" id="checkOutDate" 
+                   value="${item.checkOutDate ? formatDateForInput(item.checkOutDate) : ''}">
+        </div>
+                <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status">
+                <option value="CONFIRMED" ${item.status === 'CONFIRMED' ? 'selected' : ''}>Confirmed</option>
+                <option value="CANCELLED" ${item.status === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                <option value="CHECKED_IN" ${item.status === 'CHECKED_IN' ? 'selected' : ''}>Checked In</option>
+            </select>
+        </div>
+    `;
+                case "users":
+                    return `
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" value="${item.username}">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="${item.email}">
+                </div>
+            `;
+                default:
+                    return "";
+            }
+        }
+
+        async function saveChanges(section, id) {
+            const formData = getFormData(section);
+            try {
+                const response = await fetch(`/admin/${section}/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to save changes");
+                }
+
+                alert("Changes saved successfully.");
+                loadSection(section);
+
+
+                const editModal = bootstrap.Modal.getInstance(document.getElementById("editModal"));
+                if (editModal) {
+                    editModal.hide();
+                }
+            } catch (error) {
+                console.error("Error saving changes:", error);
+                alert(`Error saving changes: ${error.message}`);
+            }
+        }
+        function formatDateForInput(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getFormData(section) {
+            switch (section) {
+                case "hotels":
+                    return {
+                        name: document.getElementById("name").value,
+                        location: document.getElementById("location").value,
+                    };
+                case "rooms":
+                    return {
+                        roomType: document.getElementById("roomType").value,
+                        price: parseFloat(document.getElementById("price").value),
+                        occupancy: parseInt(document.getElementById("occupancy").value),
+                        quantity: parseInt(document.getElementById("quantity").value),
+                        amenities: document.getElementById("amenities").value,
+                        availability: document.getElementById("availability").value
+                    };
+                case "reservations":
+                    return {
+                        firstName: document.getElementById("firstName").value,
+                        lastName: document.getElementById("lastName").value,
+                        checkInDate: document.getElementById("checkInDate").value,
+                        checkOutDate: document.getElementById("checkOutDate").value,
+                        status: document.getElementById("status").value,
+                    };
+                case "users":
+                    return {
+                        username: document.getElementById("username").value,
+                        email: document.getElementById("email").value,
+                    };
+                default:
+                    return {};
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    window.location.href = '/adminlogin.html';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => loadSection("dashboard"));
+    </script>
+</body>
+
+</html>

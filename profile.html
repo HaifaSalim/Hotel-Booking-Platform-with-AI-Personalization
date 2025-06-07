@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/navigation.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .site-header {
+            background-color: white;
+            padding: 7px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .site-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #050b7c;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .site-logo:hover {
+            color: #007bff;
+        }
+
+        .site-logo a {
+            color: #050b7c !important;
+            text-decoration: none;
+        }
+
+
+        @media (max-width: 768px) {
+            .site-logo {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header js-site-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-6 col-lg-4 site-logo" data-aos="fade"><a href="index.html">InnovateStay</a></div>
+                <div class="col-6 col-lg-8">
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <div class="card p-4 shadow">
+            <h2 class="text-center">User Profile</h2>
+            <p><strong>Username:</strong> <span id="username"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <h4 class="mt-4">Your Bookings</h4>
+            <ul id="bookings" class="list-group mt-2"></ul>
+        </div>
+    </div>
+
+    <script src="js/auth-nav.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let userId;
+
+
+            fetch("https://localhost:8443/users/profile", {
+                method: "GET",
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Failed to fetch profile');
+                })
+                .then(user => {
+
+                    userId = user.id;
+
+
+                    document.getElementById("username").textContent = user.username;
+                    document.getElementById("email").textContent = user.email;
+
+
+                    return fetch(`https://localhost:8443/api/reservations/user/${user.id}`, {
+                        method: "GET",
+                        credentials: 'include'
+                    });
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Failed to fetch reservations');
+                })
+                .then(reservations => {
+
+                    const bookingsList = document.getElementById("bookings");
+                    if (reservations.length === 0) {
+                        bookingsList.innerHTML = "<li class='list-group-item'>No bookings found.</li>";
+                    } else {
+                        reservations.forEach(reservation => {
+                            const bookingItem = document.createElement("li");
+                            bookingItem.className = "list-group-item";
+
+
+                            const checkInDate = new Date(reservation.checkInDate);
+                            const today = new Date();
+                            const canCancel = checkInDate > today;
+
+                            bookingItem.innerHTML = `
+                            <strong>Booking Reference:</strong> ${reservation.bookingReference}<br>
+                            <strong>Hotel:</strong> ${reservation.hotel.name}<br>
+                            <strong>Check-In:</strong> ${reservation.checkInDate}<br>
+                            <strong>Check-Out:</strong> ${reservation.checkOutDate}<br>
+                            <strong>Total Price:</strong> $${reservation.payment.totalPrice.toFixed(2)}
+                            <div class="mt-2">
+                                ${canCancel ?
+                                    `<a href="cancel-reservation.html?reference=${reservation.bookingReference}" 
+                                        class="btn btn-danger btn-sm">
+                                        Cancel Reservation
+                                    </a>` :
+                                    `<span class="text-muted">Cannot cancel (check-in date has passed)</span>`
+                                }
+                            </div>
+                        `;
+                            bookingsList.appendChild(bookingItem);
+                        });
+
+
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById("bookings").innerHTML =
+                        `<li class='list-group-item text-danger'>Error loading reservations: ${error.message}</li>`;
+                });
+        });
+
+    </script>
+</body>
+
+</html>
